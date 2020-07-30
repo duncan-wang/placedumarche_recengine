@@ -2,9 +2,18 @@
 Python flask web.app deployed in Heroku for collect user input and recommend food security organizations in Montreal
 
 
-
 Based on Machine Learning Deployment Tutorials by Abhinav Sagar
 https://github.com/abhinavsagar/Machine-Learning-Deployment-Tutorials
+
+
+## 1. How to deploy on Heroku
+Visit Heroku website and follow the instructions for "Getting Started on Heroku with Python"
+https://devcenter.heroku.com/articles/getting-started-with-python
+
+The steps, broadly, are:  
+1. Install Heroku  
+2. Clone this repository  
+3. Deploy the app
 
 
 ## License
