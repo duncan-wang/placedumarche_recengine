@@ -1,8 +1,8 @@
 # Recommendation engine for Placedumarche.com
-Python flask web.app deployed in Heroku for collect user input and recommend food security organizations in Montreal
+Python flask web.app deployed in Heroku for collect user input and recommend food security organizations in Montreal  
 
 
-Based on Machine Learning Deployment Tutorials by Abhinav Sagar
+Based on Machine Learning Deployment Tutorials by Abhinav Sagar  
 https://github.com/abhinavsagar/Machine-Learning-Deployment-Tutorials
 
 
@@ -15,7 +15,7 @@ The steps, broadly, are:
 2. Clone this repository  
 3. Deploy the app  
 
-## 1. Embed the web app as an iFrame in WordPress
+## 2. Embed the web app as an iFrame in WordPress
 1. On the page editor, add a shortcode block  
 2. Enter the shortcode:  
 [iframe src='url_for_heroku_app']  
