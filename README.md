@@ -13,8 +13,14 @@ https://devcenter.heroku.com/articles/getting-started-with-python
 The steps, broadly, are:  
 1. Install Heroku  
 2. Clone this repository  
-3. Deploy the app
+3. Deploy the app  
 
+## 1. Embed the web app as an iFrame in WordPress
+1. On the page editor, add a shortcode block  
+2. Enter the shortcode:  
+[iframe src='url_for_heroku_app']  
+3. replace url_for_heroku_app by the full link for your hero app. ex:  
+[iframe src="https://secure-sierra-51423.herokuapp.com/"]
 
 ## License
 
