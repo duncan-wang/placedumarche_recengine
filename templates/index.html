@@ -17,7 +17,7 @@
 
      <!-- Main Input For Receiving Query to our ML -->
     <form action="{{ url_for('predict')}}"method="post">
-      <div class="form-row">  
+              <div class="form-row">  
                 <label>  
                     <span>Select your area</span>  
                     <select name="area">  
@@ -41,7 +41,40 @@
                         <option>LaSalle</option>   
                     </select>  
                 </label>  
+              </div>
+              <div class="form-row">  
+                <label>  
+                    <span>Select your prefered service size</span>  
+                    <select name="service">  
+                        <option>small</option>  
+                        <option>medium</option>  
+                        <option>large</option>  
+                    </select>  
+                </label>  
+            </div>   
+  
+            <div class="form-row">  
+                <label>  
+                    <span>Select your prefered organization size</span>  
+                    <select name="org">  
+                        <option>small</option>  
+                        <option>medium</option>  
+                        <option>large</option>  
+                    </select>  
+                </label>  
             </div>  
+  
+            <div class="form-row">  
+                <label>  
+                    <span>Select your prefered role</span>  
+                    <select name="role">  
+                        <option>cook</option>  
+                        <option>serve</option>  
+                        <option>prep</option>  
+                        <option>clean</option>  
+                    </select>  
+                </label>  
+            </div>    
     	<input type="text" name="rate" placeholder="rate" required="required" />
         <input type="text" name="sales in first month" placeholder="sales in first month" required="required" />
 		<input type="text" name="sales in second month" placeholder="sales in second month" required="required" />
