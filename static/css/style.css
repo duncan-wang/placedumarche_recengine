@@ -20,7 +20,7 @@ body {
 	background: #fff;
 	color: #000;
 	font-size: 24px;
-	text-align:center;
+	text-align:left;
 	letter-spacing:1.4px;
 
 }
@@ -29,7 +29,7 @@ body {
 ;
 }
 
-.login h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
+.login h1 { color: #000; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:left; }
 
 input { 
 	width: 100%; 
@@ -39,7 +39,7 @@ input {
 	outline: none;
 	padding: 10px;
 	font-size: 13px;
-	color: #fff;
+	color: #000;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
 	border: 1px solid rgba(0,0,0,0.3);
 	border-radius: 4px;
