@@ -160,8 +160,13 @@ def predict():
     #prediction = model.predict(final_features)
 
     output = finalRanking(location, serviceSizePref, orgSizePref,rolePref)
+    out1 = output[0]
+    out2 = output[1]
+    out3 = output[2]
+    out4 = output[3]
+    out5 = output[4]
 
-    return render_template('index.html', prediction_text='Top 5 orgs: {} '.format(output))
+    return render_template('index.html', prediction_text='Top 5 orgs:/n {} /n {} /n {} /n {} /n {}'.format(out1, out2, out3, out4, out5))
 
 # @app.route('/results',methods=['POST'])
 # def results():
