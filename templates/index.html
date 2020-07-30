@@ -17,6 +17,31 @@
 
      <!-- Main Input For Receiving Query to our ML -->
     <form action="{{ url_for('predict')}}"method="post">
+      <div class="form-row">  
+                <label>  
+                    <span>Select your area</span>  
+                    <select name="area">  
+                        <option>L’Île-Bizard—Sainte-Geneviève</option>  
+                        <option>Pierrefonds-Roxboro</option>  
+                        <option>Saint-Laurent</option> 
+                        <option>Ahuntsic-Cartierville</option> 
+                        <option>Montréal-Nord</option>
+                        <option>Rivière-des-Prairies—Pointe-aux-Trembles</option> 
+                        <option>Anjou</option> 
+                        <option>Saint-Léonard</option> 
+                        <option>Villeray—Saint-Michel—Parc-Extension</option> 
+                        <option>Rosemont—La Petite-Patrie</option> 
+                        <option>Mercier—Hochelaga-Maisonneuve</option> 
+                        <option>Le Plateau-Mont-Royal</option> 
+                        <option>Outremont</option> 
+                        <option>Ville-Marie</option> 
+                        <option>Côte-des-Neiges—Notre-Dame-de-Grâce</option> 
+                        <option>Le Sud-Ouest</option> 
+                        <option>Verdun</option> 
+                        <option>LaSalle</option>   
+                    </select>  
+                </label>  
+            </div>  
     	<input type="text" name="rate" placeholder="rate" required="required" />
         <input type="text" name="sales in first month" placeholder="sales in first month" required="required" />
 		<input type="text" name="sales in second month" placeholder="sales in second month" required="required" />
