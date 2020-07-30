@@ -17,20 +17,16 @@ body {
 	width: 100%;
 	height:100%;
 	font-family: 'Helvetica';
-	background: #000;
-	color: #fff;
+	background: #fff;
+	color: #000;
 	font-size: 24px;
 	text-align:center;
 	letter-spacing:1.4px;
 
 }
 .login { 
-	position: absolute;
-	top: 40%;
-	left: 50%;
-	margin: -150px 0 0 -150px;
-	width:400px;
-	height:400px;
+	position: static;
+;
 }
 
 .login h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
