@@ -161,7 +161,7 @@ def predict():
 
     output = finalRanking(location, serviceSizePref, orgSizePref,rolePref)
 
-    return render_template('index.html', prediction_text='Top 5 orgs $ {} '.format(output))
+    return render_template('index.html', prediction_text='Top 5 orgs: {} '.format(output))
 
 # @app.route('/results',methods=['POST'])
 # def results():
