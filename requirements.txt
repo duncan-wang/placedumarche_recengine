@@ -4,5 +4,5 @@ django-heroku
 numpy
 pandas
 flask
-matplotlib.pyplot
+matplotlib
 requests
