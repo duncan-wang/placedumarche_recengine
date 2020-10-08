@@ -3,20 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <title>Organization Recommendation Engine</title>
-  <link rel="stylesheet" href="static/css/style.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+<!-- CSS section. to be added to external style sheet in the future -->  
+
+<!-- drop down menu -->  
+  <style>
+      .select {
+          padding: 8px 12px;
+          color: #333333;
+          background-color: #eeeeee;
+          border: 1px solid #dddddd;
+          cursor: pointer;
+          border-radius: 5px;
+        
+      }
+
+      .select:focus,
+      .select:hover {
+          outline: none;
+          border: 1px solid #bbbbbb;
+      }
+
+      .seelct option{
+          background: #ffffff;
+      }
+
+      div.form-row {
+          height: 5em;
+          display: flex;
+          align-items: center;
+          justify-content: center 
+      }
+      
+     #btn {
+          text-align: center; 
+      }
+     
+  </style>
+
 </head>
 
 <body style="background: #ffffff;">
  <div class="login">
-	
-
      <!-- Main Input For Receiving Query to our ML -->
     <form action="{{ url_for('predict')}}"method="post">
               <div class="form-row">  
                 <label>  
                     <span>Select your area</span>  
-                    <select name="area">  
-                        <option disabled selected>Area</option>
+                    <select name="area" class="select">  
+                        <option disabled selected>select</option>
                         <option>L’Île-Bizard—Sainte-Geneviève</option>  
                         <option>Pierrefonds-Roxboro</option>  
                         <option>Saint-Laurent</option> 
@@ -41,8 +77,8 @@
               <div class="form-row">  
                 <label>  
                     <span>Select your prefered service size</span>  
-                    <select name="service"> 
-                        <option disabled selected>Size</option> 
+                    <select name="service" class="select"> 
+                        <option disabled selected>select</option> 
                         <option>small</option>  
                         <option>medium</option>  
                         <option>large</option>  
@@ -53,8 +89,8 @@
             <div class="form-row">  
                 <label>  
                     <span>Select your prefered organization size</span>  
-                    <select name="org">  
-                        <option disabled selected>Size</option> 
+                    <select name="org" class="select">  
+                        <option disabled selected>select</option> 
                         <option>small</option>  
                         <option>medium</option>  
                         <option>large</option>  
@@ -65,7 +101,8 @@
             <div class="form-row">  
                 <label>  
                     <span>Select your prefered role</span>  
-                    <select name="role">  
+                    <select name="role" class="select">  
+                        <option disabled selected>select</option> 
                         <option>cook</option>  
                         <option>serve</option>  
                         <option>prep</option>  
@@ -74,7 +111,7 @@
                 </label>  
             </div>    
 
-        <button type="submit" class="btn btn-primary btn-block btn-large">Submit</button>
+        <button id="btn" type="submit" class="btn btn-primary btn-block btn-large">Submit</button>
     </form>
 
    <br>
