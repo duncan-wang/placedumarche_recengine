@@ -166,7 +166,9 @@ def predict():
     out4 = output[3]
     out5 = output[4]
 
-    return render_template('index.html', prediction_text='Top 5 orgs:<br> 1.{} <br> 2.{} <br> 3.{} <br> 4.{} <br> 5.{}'.format(out1, out2, out3, out4, out5))
+    output = "<div class='output'> Top 5 orgs:<br> 1.{} <br> 2.{} <br> 3.{} <br> 4.{} <br> 5.{} <\div>".format(out1, out2, out3, out4, out5)
+
+    return render_template('index.html', prediction_text=output)
 
 # @app.route('/results',methods=['POST'])
 # def results():
