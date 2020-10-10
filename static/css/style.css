@@ -1,3 +1,54 @@
-h1 {
-    color: blue;
+
+.select {
+    padding: 1px 10px;
+    color: #333333;
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'open sans';
+    font-size: 18px;
+  
 }
+
+.select:focus,
+.select:hover {
+    outline: none;
+    border: 1px solid #bbbbbb;
+}
+
+.seelct option{
+    background: #ffffff;
+}
+
+div.form-row {
+    height: 5em;
+}
+
+#btn {
+    text-align: center; 
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    font-size: 20;
+    padding: 5px 28px;
+    opacity: 0.8;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: 'open sans';
+    
+}
+
+#btn:focus,
+#btn:hover {
+    outline: none;
+    border: 1px solid #bbbbbb;
+}
+
+span {
+    font-size: 20px;
+    font-family: 'open sans';
+}
+
+
+
