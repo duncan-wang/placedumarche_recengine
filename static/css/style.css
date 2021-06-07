@@ -10,9 +10,13 @@
     font-size: 18px;
   
 }
+
+.body {
+    font-family: Raleway;
+}
+
 .title {
     color: #1037a2;
-    font-family: Raleway;
     font-weight: 800;
     font-size: 26px;
     margin: 10px 0px 40px;
@@ -32,24 +36,21 @@ div.form-row {
     height: 5em;
 }
 
-#btn {
+.btn-submit {
     text-align: center; 
-    background-color: #eeeeee;
-    border: 1px solid #dddddd;
-    border-radius: 5px;
-    font-size: 20;
+    background: #1037a2;
+    border-radius: 12px;
+    font-size: 18px;
     padding: 5px 28px;
-    opacity: 0.8;
-    cursor: pointer;
-    font-size: 20px;
-    font-family: 'open sans';
-    
+    font-family: Raleway;
+    color: #fff;
 }
 
 #btn:focus,
 #btn:hover {
-    outline: none;
-    border: 1px solid #bbbbbb;
+    opacity: 0.8;
+    /* outline: none;
+    border: 1px solid #bbbbbb; */
 }
 
 span {
