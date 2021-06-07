@@ -113,7 +113,7 @@ def finalRanking(location, serviceSizePref, orgSizePref, rolePref):
     orgs = orgs.iloc[:,0:7]
     #dummify columns
     orgs = pd.get_dummies(orgs, columns = ["Org size", "Service size"])
-    #create list of roles
+    #create list of roles for each org in orgs
     orgs["Available roles"] = orgs["Available roles"].apply(makeList)
     #create volunteer instance from user input
     testArr = [0,0,0,0,0,0,0,0,0,0,0,0]
