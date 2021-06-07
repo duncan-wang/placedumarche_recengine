@@ -2,20 +2,20 @@
 <html >
 <head>
   <meta charset="UTF-8">
-  <title>Organization Recommendation Engine</title>
+  <title>organization recengine</title>
   <link rel="stylesheet" type="text/css" href="../static/css/style.css">
 </head>
 
 <body style="background: #ffffff;">
  <div class="login">
     <h1 class="title">
-        Find Your Ideal Organization: 
+        Select your organization preferences: 
     </h1>
      <!-- Main Input For Receiving Query to our ML -->
     <form action="{{ url_for('predict')}}"method="post">
               <div class="form-row">  
                 <label>  
-                    <span>Select your area: </span>  
+                    <span>Area: </span>  
                     <select name="area" class="select">  
                         <option disabled selected>select</option>
                         <option>L’Île-Bizard—Sainte-Geneviève</option>  
@@ -41,7 +41,7 @@
               </div>
               <div class="form-row">  
                 <label>  
-                    <span>Select your prefered service size: </span>  
+                    <span>Prefered Service Size: </span>  
                     <select name="service" class="select"> 
                         <option disabled selected>select</option> 
                         <option>small</option>  
@@ -53,7 +53,7 @@
   
             <div class="form-row">  
                 <label>  
-                    <span>Select your prefered organization size: </span>  
+                    <span>Organization Size: </span>  
                     <select name="org" class="select">  
                         <option disabled selected>select</option> 
                         <option>small</option>  
@@ -65,7 +65,7 @@
   
             <div class="form-row">  
                 <label>  
-                    <span>Select your prefered role: </span>  
+                    <span>Prefered Role: </span>  
                     <select name="role" class="select">  
                         <option disabled selected>select</option> 
                         <option>cook</option>  
