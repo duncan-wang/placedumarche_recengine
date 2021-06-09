@@ -10,7 +10,8 @@
  <div class="login">
      <!-- Main Input For Receiving Query to our ML -->
     <form action="{{ url_for('predict')}}"method="post">
-              <div class="form-row">  
+        <div>
+            <div class="form-row">  
                 <label>  
                     <span>Select your area: </span>  
                     <select name="area" class="select">  
@@ -35,8 +36,53 @@
                         <option>LaSalle</option>   
                     </select>  
                 </label>  
-              </div>
-              <div class="form-row">  
+            </div>
+
+            <div class="form-row">
+                <label>
+                    <span>Select your prefered service size: </span><br>
+                    <div>
+                        <input type="checkbox" name="smallService" value="smallService">
+                        <label for="smallService"> Small</label><br>
+                    </div>  
+                    <div>
+                        <input type="checkbox" name="mediumService" value="mediumService">
+                        <label for="mediumService"> Medium</label><br>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="largeService" value="largeService">
+                        <label for="largeService"> Large</label><br>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="form-row">
+                <label>
+                    <span>Select your prefered organization size: </span><br>
+                    <input type="checkbox" name="smallOrg" value="smallOrg">
+                    <label for="smallOrg"> Small</label><br>
+                    <input type="checkbox" name="mediumOrg" value="mediumOrg">
+                    <label for="mediumOrg"> Medium</label><br>
+                    <input type="checkbox" name="largeOrg" value="largeOrg">
+                    <label for="largeOrg"> Large</label><br>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label>
+                    <span>Select your prefered role: </span><br>
+                    <input type="checkbox" name="cook" value="cook">
+                    <label for="cook"> Cook</label><br>
+                    <input type="checkbox" name="serve" value="serve">
+                    <label for="serve"> Serve</label><br>
+                    <input type="checkbox" name="prep" value="prep">
+                    <label for="prep"> Prep</label><br>
+                    <input type="checkbox" name="clean" value="clean">
+                    <label for="clean"> Clean</label><br>
+                </label>
+            </div>
+
+            <!-- <div class="form-row">  
                 <label>  
                     <span>Select your prefered service size: </span>  
                     <select name="service" class="select"> 
@@ -58,9 +104,9 @@
                         <option>large</option>  
                     </select>  
                 </label>  
-            </div>  
+            </div>   -->
   
-            <div class="form-row">  
+            <!-- <div class="form-row">  
                 <label>  
                     <span>Select your prefered role: </span>  
                     <select name="role" class="select">  
@@ -71,8 +117,10 @@
                         <option>clean</option>  
                     </select>  
                 </label>  
-            </div>    
-
+            </div>     -->
+        
+        </div>
+            
         <button id="btn" type="submit" class="btn btn-primary btn-block btn-large">Submit</button>
     </form>
 

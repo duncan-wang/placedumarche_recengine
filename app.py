@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-F ,Z
-
 import numpy as np
 import pandas as pd
 import operator
@@ -8,12 +6,14 @@ import pickle
 
 app = Flask(__name__)
 
-locationID = {'L’Île-Bizard—Sainte-Geneviève': 0, 'Pierrefonds-Roxboro': 1, 'Saint-Laurent': 2, 'Ahuntsic-Cartierville': 3,
-              'Montréal-Nord': 4, 'Rivière-des-Prairies—Pointe-aux-Trembles': 5, 'Anjou': 6, 'Saint-Léonard': 7,
-              'Villeray—Saint-Michel—Parc-Extension': 8, 'Rosemont—La Petite-Patrie': 9, 'Mercier—Hochelaga-Maisonneuve': 10,
-              'Le Plateau-Mont-Royal': 11, 'Outremont': 12, 'Ville-Marie': 13, 'Côte-des-Neiges—Notre-Dame-de-Grâce': 14,
-              'Le Sud-Ouest': 15, 'Verdun': 16, 'LaSalle': 17, 'TO BE FOUND': 18}
+# list of locations
+locationID = ['L’Île-Bizard—Sainte-Geneviève', 'Pierrefonds-Roxboro', 'Saint-Laurent', 'Ahuntsic-Cartierville',
+              'Montréal-Nord', 'Rivière-des-Prairies—Pointe-aux-Trembles', 'Anjou', 'Saint-Léonard',
+              'Villeray—Saint-Michel—Parc-Extension', 'Rosemont—La Petite-Patrie', 'Mercier—Hochelaga-Maisonneuve',
+              'Le Plateau-Mont-Royal', 'Outremont', 'Ville-Marie', 'Côte-des-Neiges—Notre-Dame-de-Grâce',
+              'Le Sud-Ouest', 'Verdun', 'LaSalle']
 
+# matrix that maps two locations to their physical distance
 distMatrix = [[0, 1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
               [0, 0, 1, 1, 2, 4, 3, 3, 2, 2, 4, 3, 3, 3, 2, 3, 3, 3, 2],
               [0, 0, 0, 1, 2, 3, 3, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
@@ -33,52 +33,86 @@ distMatrix = [[0, 1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
+# dictionary mapping input to index in volunteer list
+inputID = {'smallService': 2, 'mediumService': 1, 'largeService': 0, 'smallOrg': 5, 'mediumOrg': 4, 'largeOrg': 3}
+
 def makeList(x):
-    '''splits string into a list with elements separated by ',' '''
-    result = x.split(",")
+    '''splits string into a list with elements separated by ', ' '''
+    result = x.split(", ")
     return result
+
+def getSizesCompatibility(sizePref, org):
+    '''return a value that increases the less the org and the volunteers preferences are compatible'''
+    result = 0.0
+
+    orgSizeGood = False
+    serviceSizeGood = False
+    for i in range(len(sizePref)):
+        if i < 3:
+            if sizePref[i] == 1 and org[5 + i] == 1:
+                orgSizeGood = True
+        else:
+            if sizePref[i] == 1 and org[5 + i] == 1:
+                serviceSizeGood = True
+
+    # increasing distance if org size doesn't correspond to preference
+    if not orgSizeGood:
+        result += 2
+    # increasing distance if service size doesn't correspond to preference
+    if not serviceSizeGood:
+        result += 2*((1.3)**2)
+
+    return result
+    # Ideas: could increase less if pref is small and vol is medium than when vol is large
 
 def getPhysicalDistance(location1, location2):
     ''' given 2 locations, return physical distance weight given in the distance matrix'''
-    if locationID[location1] < locationID[location2]:
-        return distMatrix[locationID[location1]][locationID[location2]]
-    else:
-        return distMatrix[locationID[location2]][locationID[location1]]
 
-def distance(vol, org, location, rolePref):
+    if location1 in locationID and location2 in locationID:
+        x = locationID.index(location1)
+        y = locationID.index(location2)
+    else: #location doesn't exist
+        return 10
+
+    if x < y:
+        return distMatrix[x][y]
+    else:
+        return distMatrix[y][x]
+
+def getRoleDistance(rolePref, org):
+    '''returns a weight if roles wanted are not available'''
+    availableRoles = 0
+    for role in rolePref:
+        if role in org[4]:
+            availableRoles += 1
+
+    return ((1-availableRoles/len(rolePref))*5)
+
+def distance(sizePref, org, location, rolePref):
     '''calculates distance between volunteer and organization
-        vol: list of length 6 with 1 and zero corresponding to volunteer's preferences. 
+        pref: list of length 6 with 1 and zero corresponding to volunteer's preferences. 
             ex: [0, 0, 1, 0, 1, 0] org size: small, service size: medium
         gives highest importance to location
         second highest importance to service size'''
-    
+
     distance = 0.0
-
-    # increasing distance if org size doesn't correspond to preference
-    distance += (vol[0] - org[5])**2
-    distance += (vol[1] - org[6])**2
-    distance += (vol[2] - org[7])**2
-
-    # increasing distance if service size doesn't correspond to preference
-    distance += (1.3*(vol[3] - org[8]))**2
-    distance += (1.3*(vol[4] - org[9]))**2
-    distance += (1.3*(vol[5] - org[10]))**2
-
-    # increasing distance based on the physical distance between org's location and volunteer's location
+    #increase distance if the org size properties aren't compatable with volunteer's preferences
+    distance += getSizesCompatibility(sizePref, org)
+    # print('size: ', distance)
+    # increasing distance proportional to the physical distance between org's location and volunteer's location
     distance += (2*((2/5)*getPhysicalDistance(location, org[2])))**2
-
+    # print('distance: ', distance)
     # increasing distance if the prefered role isn't available
-    if rolePref not in org[4]:
-        distance += 5
+    distance += getRoleDistance(rolePref, org)
+    # print('role: ', distance)
 
     return np.sqrt(distance) #not necessary to square root
 
-def rank(vol, orgs, location, rolePref):
-    '''creates a dictionary mapping org id to distance (weight) corresponding to the volunteer's preference'''
+def rank(sizePref, orgs, location, rolePref):
+    '''creates a dictionary mapping org id to distance (weight) corresponding to the volunteer's preferences'''
     weights = {}
     for i in range(0, len(orgs)):
-        dist = distance(vol, orgs.iloc[i, :], location, rolePref)
-        weights[i] = dist
+        weights[i] = distance(sizePref, orgs.iloc[i, :], location, rolePref)
 
     return weights
 
@@ -90,7 +124,7 @@ def getFiveNames(sortedOrgs, orgs):
 
     return names
 
-def finalRanking(location, serviceSizePref, orgSizePref, rolePref):
+def finalRanking(location, sizePref, rolePref):
     '''returns the top five orgs corresponding to the volunteers preference'''
     orgs = pd.read_csv("Organizations_V2.csv")
     orgs = orgs.iloc[:, 0:7]
@@ -99,28 +133,16 @@ def finalRanking(location, serviceSizePref, orgSizePref, rolePref):
     #create list of roles
     orgs["Available roles"] = orgs["Available roles"].apply(makeList)
 
-    #create volunteer instance from user input
-    testArr = [0 for _ in range(6)]
-
-    if orgSizePref == "large":
-        testArr[0] = 1
-    elif orgSizePref == "medium":
-        testArr[1] = 1
-    elif orgSizePref == "small":
-        testArr[2] = 1
-    if serviceSizePref == "large":
-        testArr[3] = 1
-    elif serviceSizePref == "medium":
-        testArr[4] = 1
-    elif orgSizePref == "small":
-        testArr[5] = 1
+    # print(location, sizePref, rolePref)
 
     #weight compatibility of organizations with preferences
-    weighted = rank(testArr, orgs, location, rolePref)
+    weighted = rank(sizePref, orgs, location, rolePref)
     sortedOrgs = sorted(weighted.items(), key=operator.itemgetter(1))
 
     #find and display the top 5
     output = getFiveNames(sortedOrgs, orgs)
+    print(sortedOrgs)
+
     return output
 
 @app.route('/')
@@ -130,13 +152,21 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     '''receives inputs of preferences from POST, and outputs the top 5 orgs that best fits the preferences'''
-    input = [str(x) for x in request.form.values()]
-    location = input[0]
-    serviceSizePref = input[1]
-    orgSizePref = input[2]
-    rolePref = input[3]
+    sizePref = [0, 0, 0, 0, 0, 0]
+    location = ''
+    rolePref = []
 
-    output = finalRanking(location, serviceSizePref, orgSizePref, rolePref)
+    inp = request.form.values()
+    input = [str(x) for x in inp]
+    for i in input:
+        if i in locationID:
+            location = i
+        elif i in inputID:
+            sizePref[inputID[i]] = 1
+        else: # roles
+            rolePref.append(i)
+
+    output = finalRanking(location, sizePref, rolePref)
     predText = 'Top 5 orgs:<br> 1.{} <br> 2.{} <br> 3.{} <br> 4.{} <br> 5.{}'.format(output[0], output[1], output[2], output[3], output[4])
     return render_template('index.html', prediction_text=predText)
 
