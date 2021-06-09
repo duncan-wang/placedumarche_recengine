@@ -13,8 +13,9 @@
         Select your organization preferences: 
     </h1>
      <!-- Main Input For Receiving Query to our ML -->
-    <form action="{{ url_for('predict')}}"method="post">
-        <div>
+    <form action="{{ url_for('predict')}}" method="post">
+        <div class="form">
+
             <div class="form-row">  
                 <label>  
                     <span>Prefered area: </span>  
@@ -45,15 +46,11 @@
             <div class="form-row">
                 <label>
                     <span>Prefered service size: </span><br>
-                    <div>
+                    <div class="checkbox-input">
                         <input type="checkbox" name="smallService" value="smallService">
                         <label for="smallService"> Small</label><br>
-                    </div>  
-                    <div>
                         <input type="checkbox" name="mediumService" value="mediumService">
                         <label for="mediumService"> Medium</label><br>
-                    </div>
-                    <div>
                         <input type="checkbox" name="largeService" value="largeService">
                         <label for="largeService"> Large</label><br>
                     </div>
@@ -63,69 +60,36 @@
             <div class="form-row">
                 <label>
                     <span>Prefered organization size: </span><br>
-                    <input type="checkbox" name="smallOrg" value="smallOrg">
-                    <label for="smallOrg"> Small</label><br>
-                    <input type="checkbox" name="mediumOrg" value="mediumOrg">
-                    <label for="mediumOrg"> Medium</label><br>
-                    <input type="checkbox" name="largeOrg" value="largeOrg">
-                    <label for="largeOrg"> Large</label><br>
+                    <div class="checkbox-input">
+                        <input type="checkbox" name="smallOrg" value="smallOrg">
+                        <label for="smallOrg"> Small</label><br>
+                        <input type="checkbox" name="mediumOrg" value="mediumOrg">
+                        <label for="mediumOrg"> Medium</label><br>
+                        <input type="checkbox" name="largeOrg" value="largeOrg">
+                        <label for="largeOrg"> Large</label><br>
+                    </div>
                 </label>
             </div>
 
             <div class="form-row">
                 <label>
                     <span>Prefered role: </span><br>
-                    <input type="checkbox" name="cook" value="cook">
-                    <label for="cook"> Cook</label><br>
-                    <input type="checkbox" name="serve" value="serve">
-                    <label for="serve"> Serve</label><br>
-                    <input type="checkbox" name="prep" value="prep">
-                    <label for="prep"> Prep</label><br>
-                    <input type="checkbox" name="clean" value="clean">
-                    <label for="clean"> Clean</label><br>
+                    <div class="checkbox-input">
+                        <input type="checkbox" name="clean" value="clean" id="clean">
+                        <label for="clean"> Clean</label><br>
+                        <input type="checkbox" name="cook" value="cook">
+                        <label for="cook"> Cook</label><br>
+                        <input type="checkbox" name="serve" value="serve">
+                        <label for="serve"> Serve</label><br>
+                        <input type="checkbox" name="prep" value="prep">
+                        <label for="prep"> Prep</label><br>
+                    </div>
                 </label>
-            </div>
-
-            <!-- <div class="form-row">  
-                <label>  
-                    <span>Prefered Service Size: </span>  
-                    <select name="service" class="select"> 
-                        <option disabled selected>select</option> 
-                        <option>small</option>  
-                        <option>medium</option>  
-                        <option>large</option>  
-                    </select>  
-                </label>  
-            </div>   
-  
-            <div class="form-row">  
-                <label>  
-                    <span>Organization Size: </span>  
-                    <select name="org" class="select">  
-                        <option disabled selected>select</option> 
-                        <option>small</option>  
-                        <option>medium</option>  
-                        <option>large</option>  
-                    </select>  
-                </label>  
-            </div>   -->
-  
-            <!-- <div class="form-row">  
-                <label>  
-                    <span>Prefered Role: </span>  
-                    <select name="role" class="select">  
-                        <option disabled selected>select</option> 
-                        <option>cook</option>  
-                        <option>serve</option>  
-                        <option>prep</option>  
-                        <option>clean</option>  
-                    </select>  
-                </label>  
-            </div>     -->
+            </div>            
         
-        </div>
-            
-        <button id="btn" type="submit" class="btn btn-primary btn-block btn-large">Submit</button>
+            <button id="btn" type="submit" class="btn-submit">Submit</button>
+        </div>    
+        
     </form>
 
    <br>

@@ -11,7 +11,7 @@
   
 }
 
-.body {
+body {
     font-family: Raleway;
 }
 
@@ -19,7 +19,7 @@
     color: #1037a2;
     font-weight: 800;
     font-size: 26px;
-    margin: 10px 0px 40px;
+    margin: 10px 0px 30px;
 }
 
 .select:focus,
@@ -28,12 +28,24 @@
     border: 1px solid #bbbbbb;
 }
 
-.seelct option{
+.select option{
     background: #ffffff;
 }
 
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
 div.form-row {
-    height: 5em;
+    margin-left: 4%;
+    margin-bottom: 2%;
+}
+
+.checkbox-input {
+    margin-left: 7%;
+    margin-top: 2%;
 }
 
 .btn-submit {
@@ -44,6 +56,8 @@ div.form-row {
     padding: 5px 28px;
     font-family: Raleway;
     color: #fff;
+    align-self: center;
+    border: 0px;
 }
 
 #btn:focus,
@@ -55,12 +69,10 @@ div.form-row {
 
 span {
     font-size: 20px;
-    font-family: 'open sans';
 }
 
 #output {
     font-size: 20px;
-    font-family: 'open sans';
 }
 
 
