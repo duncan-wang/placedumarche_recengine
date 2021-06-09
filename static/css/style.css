@@ -19,7 +19,8 @@ body {
     color: #1037a2;
     font-weight: 800;
     font-size: 26px;
-    margin: 10px 0px 30px;
+    margin: 0px 0px 30px;
+    text-align: center;
 }
 
 .select:focus,
@@ -35,11 +36,10 @@ body {
 .form {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
 }
 
 div.form-row {
-    margin-left: 4%;
+    margin-left: 35%;
     margin-bottom: 2%;
 }
 
@@ -71,8 +71,9 @@ span {
     font-size: 20px;
 }
 
-#output {
+.output {
     font-size: 20px;
+    text-align: center;
 }
 
 
