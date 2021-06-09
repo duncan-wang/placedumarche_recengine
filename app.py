@@ -5,181 +5,170 @@ from flask import Flask, request, jsonify, render_template
 import pickle
 
 app = Flask(__name__)
-#model = pickle.load(open('model.pkl', 'rb'))
 
-#prepare and display location martix
-matrix = [[0,1,2,3,4,5,5,4,3,4,5,4,4,4,3,4,4,3,2],[0,0,1,1,2,4,3,3,2,2,4,3,3,3,2,3,3,3,2],
- [0,0,0,1,2,3,3,2,1,1,2,1,1,2,1,2,2,2,1],[0,0,0,0,1,2,2,1,1,2,3,2,2,3,2,3,3,3,2],
- [0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,4,4,4,4],[0,0,0,0,0,0,1,1,2,2,2,3,3,3,4,4,5,5,5],
- [0,0,0,0,0,0,0,1,2,2,1,2,3,3,4,4,4,5,5],[0,0,0,0,0,0,0,0,1,1,1,2,2,3,3,4,4,5,5],
- [0,0,0,0,0,0,0,0,0,1,2,1,1,2,1,3,3,4,3],[0,0,0,0,0,0,0,0,0,0,1,1,1,2,2,3,3,4,4],
- [0,0,0,0,0,0,0,0,0,0,0,1,2,1,2,2,3,4,4],[0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,3,4,3],
- [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,3,3],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,3],
- [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2],
- [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
-for i in range(0,19):
-    for j in range(0,i):
-        matrix[i][j] = matrix[j][i]
-        
-#returns number corresponding to row/column of matrix
-def locationCode(x):
-    if x == "L’Île-Bizard—Sainte-Geneviève":
-        return 0
-    elif x == "Pierrefonds-Roxboro":
-        return 1
-    elif x == "Saint-Laurent":
-        return 2
-    elif x == "Ahuntsic-Cartierville":
-        return 3
-    elif x == "Montréal-Nord":
-        return 4
-    elif x == "Rivière-des-Prairies—Pointe-aux-Trembles":
-        return 5
-    elif x == "Anjou":
-        return 6
-    elif x == "Saint-Léonard":
-        return 7
-    elif x == "Villeray—Saint-Michel—Parc-Extension":
-        return 8
-    elif x == "Rosemont—La Petite-Patrie":
-        return 9
-    elif x == "Mercier—Hochelaga-Maisonneuve":
-        return 10
-    elif x == "Le Plateau-Mont-Royal":
-        return 11
-    elif x == "Outremont":
-        return 12
-    elif x == "Ville-Marie":
-        return 13
-    elif x == "Côte-des-Neiges—Notre-Dame-de-Grâce":
-        return 14
-    elif x == "Le Sud-Ouest":
-        return 15
-    elif x == "Verdun":
-        return 16
-    elif x == "LaSalle":
-        return 17
-    else:
-        return 18
-    
-# transform available roles category from one string to a list of strings
+# list of locations
+locationID = ['L’Île-Bizard—Sainte-Geneviève', 'Pierrefonds-Roxboro', 'Saint-Laurent', 'Ahuntsic-Cartierville',
+              'Montréal-Nord', 'Rivière-des-Prairies—Pointe-aux-Trembles', 'Anjou', 'Saint-Léonard',
+              'Villeray—Saint-Michel—Parc-Extension', 'Rosemont—La Petite-Patrie', 'Mercier—Hochelaga-Maisonneuve',
+              'Le Plateau-Mont-Royal', 'Outremont', 'Ville-Marie', 'Côte-des-Neiges—Notre-Dame-de-Grâce',
+              'Le Sud-Ouest', 'Verdun', 'LaSalle']
+
+# matrix that maps two locations to their physical distance
+distMatrix = [[0, 1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
+              [0, 0, 1, 1, 2, 4, 3, 3, 2, 2, 4, 3, 3, 3, 2, 3, 3, 3, 2],
+              [0, 0, 0, 1, 2, 3, 3, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
+              [0, 0, 0, 0, 1, 2, 2, 1, 1, 2, 3, 2, 2, 3, 2, 3, 3, 3, 2],
+              [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4],
+              [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 3, 3, 4, 4, 4, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 3, 3, 4, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 2, 3, 4, 4],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+# dictionary mapping input to index in volunteer list
+inputID = {'smallService': 2, 'mediumService': 1, 'largeService': 0, 'smallOrg': 5, 'mediumOrg': 4, 'largeOrg': 3}
+
 def makeList(x):
-    result = x.split(",")
+    '''splits string into a list with elements separated by ', ' '''
+    result = x.split(", ")
     return result
 
-#calculates distance between volunteer and organization
-#gives highest importance to location
-#second highest importance to service size
-def distance(vol, org, location, matrix, rolePref):
+def getSizesCompatibility(sizePref, org):
+    '''return a value that increases the less the org and the volunteers preferences are compatible'''
+    result = 0.0
+
+    orgSizeGood = False
+    serviceSizeGood = False
+    for i in range(len(sizePref)):
+        if i < 3:
+            if sizePref[i] == 1 and org[5 + i] == 1:
+                orgSizeGood = True
+        else:
+            if sizePref[i] == 1 and org[5 + i] == 1:
+                serviceSizeGood = True
+
+    # increasing distance if org size doesn't correspond to preference
+    if not orgSizeGood:
+        result += 2
+    # increasing distance if service size doesn't correspond to preference
+    if not serviceSizeGood:
+        result += 2*((1.3)**2)
+
+    return result
+    # Ideas: could increase less if pref is small and vol is medium than when vol is large
+
+def getPhysicalDistance(location1, location2):
+    ''' given 2 locations, return physical distance weight given in the distance matrix'''
+
+    if location1 in locationID and location2 in locationID:
+        x = locationID.index(location1)
+        y = locationID.index(location2)
+    else: #location doesn't exist
+        return 10
+
+    if x < y:
+        return distMatrix[x][y]
+    else:
+        return distMatrix[y][x]
+
+def getRoleDistance(rolePref, org):
+    '''returns a weight if roles wanted are not available'''
+    availableRoles = 0
+    for role in rolePref:
+        if role in org[4]:
+            availableRoles += 1
+
+    return ((1-availableRoles/len(rolePref))*5)
+
+def distance(sizePref, org, location, rolePref):
+    '''calculates distance between volunteer and organization
+        pref: list of length 6 with 1 and zero corresponding to volunteer's preferences. 
+            ex: [0, 0, 1, 0, 1, 0] org size: small, service size: medium
+        gives highest importance to location
+        second highest importance to service size'''
+
     distance = 0.0
-    for i in range(len(vol)-1):
-        if (i>8) and (i<12):
-            distance += (1.3*(vol[i] - org[i]))**2
-        elif (i>4) and (i<9):    
-            distance += (vol[i] - org[i])**2
-    x = locationCode(location)
-    y = locationCode(org[2])
-    locDist = matrix[x][y]
-    distance += (2*((2/5)*locDist))**2
-    if rolePref not in org[4]:
-        distance += 5
-    return np.sqrt(distance)
+    #increase distance if the org size properties aren't compatable with volunteer's preferences
+    distance += getSizesCompatibility(sizePref, org)
+    # print('size: ', distance)
+    # increasing distance proportional to the physical distance between org's location and volunteer's location
+    distance += (2*((2/5)*getPhysicalDistance(location, org[2])))**2
+    # print('distance: ', distance)
+    # increasing distance if the prefered role isn't available
+    distance += getRoleDistance(rolePref, org)
+    # print('role: ', distance)
 
-#creates dictionary of all distances
-def rank(volunteer, orgDf, rankings, location, matrix, rolePref):
-    for i in range(0,len(orgDf)):
-        dist = distance(volunteer, orgDf.iloc[i,:], location, matrix, rolePref)
-        rankings[i]= dist
-    return rankings
+    return np.sqrt(distance) #not necessary to square root
 
-#returns the indices of the top 5 organizations
-def getFiveKeys(x):
-    result = []
+def rank(sizePref, orgs, location, rolePref):
+    '''creates a dictionary mapping org id to distance (weight) corresponding to the volunteer's preferences'''
+    weights = {}
+    for i in range(0, len(orgs)):
+        weights[i] = distance(sizePref, orgs.iloc[i, :], location, rolePref)
+
+    return weights
+
+def getFiveNames(sortedOrgs, orgs):
+    '''returns the names of the top 5 corresponding organization'''
+    names = []
     for i in range(5):
-        result.append(x[i][0])
-    return result
+        names.append(orgs.iloc[sortedOrgs[i][0], 1])
 
-#returns the names of the top 5 indices
-def getNames(indexList, orgDF):
-    nameList = []
-    for i in indexList:
-        nameList.append(orgDF.iloc[i,1])
-    return nameList
+    return names
 
-#main:
-def finalRanking(location, serviceSizePref, orgSizePref, rolePref):
+def finalRanking(location, sizePref, rolePref):
+    '''returns the top five orgs corresponding to the volunteers preference'''
     orgs = pd.read_csv("Organizations_V2.csv")
-    orgs = orgs.iloc[:,0:7]
+    orgs = orgs.iloc[:, 0:7]
     #dummify columns
-    orgs = pd.get_dummies(orgs, columns = ["Org size", "Service size"])
-    #create list of roles for each org in orgs
+    orgs = pd.get_dummies(orgs, columns=["Org size", "Service size"])
+    #create list of roles
     orgs["Available roles"] = orgs["Available roles"].apply(makeList)
-    #create volunteer instance from user input
-    testArr = [0,0,0,0,0,0,0,0,0,0,0,0]
 
-    if serviceSizePref == "small":
-        testArr[11] = 1
-    elif serviceSizePref == "medium":
-        testArr[10] = 1
-    else:
-        testArr[9] = 1
+    # print(location, sizePref, rolePref)
 
-    if orgSizePref == "small":
-        testArr[8] = 1
-    elif orgSizePref == "medium":
-        testArr[7] = 1
-    else:
-        testArr[5] = 1
-    #rank organizations
-    ranked = rank(testArr, orgs, {}, location, matrix, rolePref)
-
-    #sort dictionary of ranked organizations
-    sorted_d = sorted(ranked.items(), key=operator.itemgetter(1))
+    #weight compatibility of organizations with preferences
+    weighted = rank(sizePref, orgs, location, rolePref)
+    sortedOrgs = sorted(weighted.items(), key=operator.itemgetter(1))
 
     #find and display the top 5
-    finalFive = getFiveKeys(sorted_d)
-    output = getNames(finalFive,orgs)
+    output = getFiveNames(sortedOrgs, orgs)
+    print(sortedOrgs)
+
     return output
-
-
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/predict',methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
+    '''receives inputs of preferences from POST, and outputs the top 5 orgs that best fits the preferences'''
+    sizePref = [0, 0, 0, 0, 0, 0]
+    location = ''
+    rolePref = []
 
-    int_features = [str(x) for x in request.form.values()]
-    location = int_features[0]
-    serviceSizePref = int_features[1]
-    orgSizePref = int_features[2]
-    rolePref = int_features[3]
-    #final_features = [np.array(int_features)]
-    #prediction = model.predict(final_features)
+    inp = request.form.values()
+    input = [str(x) for x in inp]
+    for i in input:
+        if i in locationID:
+            location = i
+        elif i in inputID:
+            sizePref[inputID[i]] = 1
+        else: # roles
+            rolePref.append(i)
 
-    output = finalRanking(location, serviceSizePref, orgSizePref,rolePref)
-    out1 = output[0]
-    out2 = output[1]
-    out3 = output[2]
-    out4 = output[3]
-    out5 = output[4]
-
-    output = "<p id='output'> Top 5 orgs:<br> 1.{} <br> 2.{} <br> 3.{} <br> 4.{} <br> 5.{} </p>".format(out1, out2, out3, out4, out5)
-
-    return render_template('index.html', prediction_text=output)
-
-# @app.route('/results',methods=['POST'])
-# def results():
-
-#     data = request.get_json(force=True)
-#     prediction = model.predict([np.array(list(data.values()))])
-
-#     output = prediction[0]
-#     return jsonify(output)
-
-# test comment
+    output = finalRanking(location, sizePref, rolePref)
+    predText = 'Top 5 orgs:<br> 1.{} <br> 2.{} <br> 3.{} <br> 4.{} <br> 5.{}'.format(output[0], output[1], output[2], output[3], output[4])
+    return render_template('index.html', prediction_text=predText)
 
 if __name__ == "__main__":
     app.run(debug=True)
