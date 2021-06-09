@@ -41,37 +41,13 @@ def makeList(x):
     result = x.split(", ")
     return result
 
-def getSizesCompatibility(sizePref, org):
-    '''return a value that increases the less the org and the volunteers preferences are compatible'''
-    result = 0.0
-
-    orgSizeGood = False
-    serviceSizeGood = False
-    for i in range(len(sizePref)):
-        if i < 3:
-            if sizePref[i] == 1 and org[5 + i] == 1:
-                orgSizeGood = True
-        else:
-            if sizePref[i] == 1 and org[5 + i] == 1:
-                serviceSizeGood = True
-
-    # increasing distance if org size doesn't correspond to preference
-    if not orgSizeGood:
-        result += 2
-    # increasing distance if service size doesn't correspond to preference
-    if not serviceSizeGood:
-        result += 2*((1.3)**2)
-
-    return result
-    # Ideas: could increase less if pref is small and vol is medium than when vol is large
-
 def getPhysicalDistance(location1, location2):
     ''' given 2 locations, return physical distance weight given in the distance matrix'''
 
     if location1 in locationID and location2 in locationID:
         x = locationID.index(location1)
         y = locationID.index(location2)
-    else: #location doesn't exist
+    else:  # location doesn't exist
         return 10
 
     if x < y:
@@ -79,8 +55,48 @@ def getPhysicalDistance(location1, location2):
     else:
         return distMatrix[y][x]
 
+def getSizesCompatibility(sizePref, org):
+    '''return a value that increases the less the org and the volunteers preferences are compatible'''
+    
+    # if no preferences selected, return 0 since all posibilities are good
+    if sizePref == [0, 0, 0, 0, 0, 0]:
+        return 0.0
+
+    result = 0.0
+
+    orgSizeGood = False
+    serviceSizeGood = False
+    orgSizeSelected = False
+    serviceSizeSelected = False
+
+    for i in range(len(sizePref)):
+        if i < 3:
+            if sizePref[i] == 1:
+                orgSizeSelected = True
+            if sizePref[i] == 1 and org[5 + i] == 1:
+                orgSizeGood = True
+        else:
+            if sizePref[i] == 1:
+                serviceSizeSelected = True
+            if sizePref[i] == 1 and org[5 + i] == 1:
+                serviceSizeGood = True
+
+    # increasing distance if org size doesn't correspond to preference or if no selection
+    if not orgSizeGood and orgSizeSelected:
+        result += 2
+    # increasing distance if service size doesn't correspond to preference or if no selection
+    if not serviceSizeGood and serviceSizeSelected:
+        result += 2*((1.3)**2)
+
+    return result
+    # Ideas: could increase less if pref is small and vol is medium than when vol is large
+
 def getRoleDistance(rolePref, org):
     '''returns a weight if roles wanted are not available'''
+    # no roles selected
+    if rolePref == []:
+        return 0.0;
+
     availableRoles = 0
     for role in rolePref:
         if role in org[4]:
