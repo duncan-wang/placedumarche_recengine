@@ -55,7 +55,7 @@ def getPhysicalDistance(location1, location2):
     else:
         return distMatrix[y][x]
 
-def getSizesCompatibility(sizePref, org):
+def getSizesDistance(sizePref, org):
     '''return a value that increases the less the org and the volunteers preferences are compatible'''
     
     # if no preferences selected, return 0 since all posibilities are good
@@ -87,7 +87,6 @@ def getSizesCompatibility(sizePref, org):
     # increasing distance if service size doesn't correspond to preference or if no selection
     if not serviceSizeGood and serviceSizeSelected:
         result += 2*((1.3)**2)
-
     return result
     # Ideas: could increase less if pref is small and vol is medium than when vol is large
 
@@ -113,7 +112,7 @@ def distance(sizePref, org, location, rolePref):
 
     distance = 0.0
     #increase distance if the org size properties aren't compatable with volunteer's preferences
-    distance += getSizesCompatibility(sizePref, org)
+    distance += getSizesDistance(sizePref, org)
     # print('size: ', distance)
     # increasing distance proportional to the physical distance between org's location and volunteer's location
     distance += (2*((2/5)*getPhysicalDistance(location, org[2])))**2
@@ -131,6 +130,14 @@ def rank(sizePref, orgs, location, rolePref):
         weights[i] = distance(sizePref, orgs.iloc[i, :], location, rolePref)
 
     return weights
+
+def getFiveOrgs(sortedOrgs, orgs):
+    '''returns the top 5 corresponding organization'''
+    topOrgs = []
+    for i in range(5):
+        topOrgs.append(orgs.iloc[sortedOrgs[i][0], :])
+
+    return topOrgs
 
 def getFiveNames(sortedOrgs, orgs):
     '''returns the names of the top 5 corresponding organization'''
@@ -154,6 +161,9 @@ def finalRanking(location, sizePref, rolePref):
     #weight compatibility of organizations with preferences
     weighted = rank(sizePref, orgs, location, rolePref)
     sortedOrgs = sorted(weighted.items(), key=operator.itemgetter(1))
+
+    # to pretty print top 5 orgs
+    # output = getFiveOrgs(sortedOrgs, orgs)
 
     #find and display the top 5
     output = getFiveNames(sortedOrgs, orgs)
@@ -183,6 +193,10 @@ def predict():
             rolePref.append(i)
 
     output = finalRanking(location, sizePref, rolePref)
+
+    # make file result.html and find a way to output top 5 orgs in output
+    # return render_template('result.html', ...)
+
     predText = 'Top 5 orgs:<br> 1.{} <br> 2.{} <br> 3.{} <br> 4.{} <br> 5.{}'.format(output[0], output[1], output[2], output[3], output[4])
     return render_template('index.html', prediction_text=predText)
 
