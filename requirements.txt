@@ -3,4 +3,5 @@ numpy
 pandas
 flask
 requests
-
+xlrd
+openpyxl

@@ -10,7 +10,7 @@
 <body style="background: #ffffff;">
     <div class="login">
         <!-- Main Input For Receiving Query to our ML -->
-        <h1>
+        <h1 class="title">
             Select your organization preferences: 
         </h1>
         <form action="{{ url_for('predict')}}"method="post">
@@ -45,17 +45,19 @@
                 <div class="form-row">
                     <label>
                         <span>Prefered service size: </span><br>
-                        <div>
-                            <input type="checkbox" name="smallService" value="smallService">
-                            <label for="smallService"> Small</label><br>
-                        </div>  
-                        <div>
-                            <input type="checkbox" name="mediumService" value="mediumService">
-                            <label for="mediumService"> Medium</label><br>
-                        </div>
-                        <div>
-                            <input type="checkbox" name="largeService" value="largeService">
-                            <label for="largeService"> Large</label><br>
+                        <div class="checkbox-input">
+                            <div>
+                                <input type="checkbox" name="smallService" value="smallService">
+                                <label for="smallService"> Small</label><br>
+                            </div>  
+                            <div>
+                                <input type="checkbox" name="mediumService" value="mediumService">
+                                <label for="mediumService"> Medium</label><br>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="largeService" value="largeService">
+                                <label for="largeService"> Large</label><br>
+                            </div>
                         </div>
                     </label>
                 </div>
@@ -63,12 +65,14 @@
                 <div class="form-row">
                     <label>
                         <span>Prefered organization size: </span><br>
-                        <input type="checkbox" name="smallOrg" value="smallOrg">
-                        <label for="smallOrg"> Small</label><br>
-                        <input type="checkbox" name="mediumOrg" value="mediumOrg">
-                        <label for="mediumOrg"> Medium</label><br>
-                        <input type="checkbox" name="largeOrg" value="largeOrg">
-                        <label for="largeOrg"> Large</label><br>
+                        <div class="checkbox-input">
+                            <input type="checkbox" name="smallOrg" value="smallOrg">
+                            <label for="smallOrg"> Small</label><br>
+                            <input type="checkbox" name="mediumOrg" value="mediumOrg">
+                            <label for="mediumOrg"> Medium</label><br>
+                            <input type="checkbox" name="largeOrg" value="largeOrg">
+                            <label for="largeOrg"> Large</label><br>
+                        </div>
                     </div>
                 </label>
             </div>
@@ -76,7 +80,7 @@
             <div class="form-row">
                 <label>
                     <span>Prefered role: </span><br>
-                    <div class="checkbox-input">
+                    <div class="checkbox-input role">
                         <input type="checkbox" name="clean" value="clean" id="clean">
                         <label for="clean"> Clean</label><br>
                         <input type="checkbox" name="cook" value="cook">
@@ -85,8 +89,6 @@
                         <label for="serve"> Serve</label><br>
                         <input type="checkbox" name="prep" value="prep">
                         <label for="prep"> Prep</label><br>
-                        <input type="checkbox" name="clean" value="clean">
-                        <label for="clean"> Clean</label><br>
                         <input type="checkbox" name="garden" value="garden">
                         <label for="garden"> Garden</label><br>
                         <input type="checkbox" name="delivery" value="delivery">
@@ -102,9 +104,8 @@
                     </label>
                 </div>
             </div>
-            <br><br><br><br><br><br><br><br>
-            <div>
-                <button type="submit" class="btn btn-primary btn-block btn-large">Submit</button>
+            <div style="align-self: center;">
+                <button type="submit" class="btn-submit">Submit</button>
             </div>
         </form>
         <br><br>

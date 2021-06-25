@@ -11,6 +11,8 @@ numpy = "*"
 pandas = "*"
 requests = "*"
 Flask = "*"
+xlrd = "*"
+openpyxl = "*"
 
 [requires]
 python_version = "3.9.5"

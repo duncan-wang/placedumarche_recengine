@@ -94,7 +94,7 @@ def getRoleDistance(rolePref, org):
     '''returns a weight if roles wanted are not available'''
     # no roles selected
     if rolePref == []:
-        return 0.0;
+        return 0.0
 
     availableRoles = 0
     for role in rolePref:
@@ -149,7 +149,8 @@ def getFiveNames(sortedOrgs, orgs):
 
 def finalRanking(location, sizePref, rolePref):
     '''returns the top five orgs corresponding to the volunteers preference'''
-    orgs = pd.read_csv("Organizations_V2.csv")
+    orgs = pd.read_excel("./Organizations_V3.xlsx", sheet_name= "org_list")
+    #orgs = pd.read_csv("Organizations_V2.csv")
     orgs = orgs.iloc[:, 0:7]
     #dummify columns
     orgs = pd.get_dummies(orgs, columns=["Org size", "Service size"])

@@ -33,7 +33,8 @@ body {
     background: #ffffff;
 }
 
-.form {
+
+form {
     display: flex;
     flex-direction: column;
 }
@@ -41,11 +42,16 @@ body {
 div.form-row {
     margin-left: 35%;
     margin-bottom: 2%;
+    margin-right: 35%;
 }
 
 .checkbox-input {
     margin-left: 7%;
     margin-top: 2%;
+}
+
+.checkbox-input.role {
+    column-count: 2;
 }
 
 .btn-submit {
