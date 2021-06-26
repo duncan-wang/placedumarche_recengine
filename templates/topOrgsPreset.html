@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Organization Recommendation Engine</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+</head>
+
+<body>
+
+    {% for i in range(0, 5) %}
+        <div>
+            <img src="{{ url_for('static', filename='media/logo/' + orgNames[i] + '.png') }}" alt="{{ orgNames[i] }} logo" class="logo"><br>
+            <div>
+                {{ descriptions[i] }}
+            </div>
+        </div>
+    {%endfor%}
+
+</body>  
+</html>

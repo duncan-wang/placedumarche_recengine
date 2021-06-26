@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import operator
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, url_for
 import pickle
 
 app = Flask(__name__)
@@ -33,8 +33,9 @@ distMatrix = [[0, 1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-# dictionary mapping input to index in volunteer list
-inputID = {'smallService': 2, 'mediumService': 1, 'largeService': 0, 'smallOrg': 5, 'mediumOrg': 4, 'largeOrg': 3}
+# dictionary mapping input to index in volunteer sizes preference list
+orgSizePreferenceMap = {'smallOrg': 2, 'mediumOrg': 1, 'largeOrg': 0}
+serviceSizePreferenceMap = {'smallService': 2, 'mediumService': 1, 'largeService': 0}
 
 def makeList(x):
     '''splits string into a list with elements separated by ', ' '''
@@ -55,38 +56,38 @@ def getPhysicalDistance(location1, location2):
     else:
         return distMatrix[y][x]
 
-def getSizesDistance(sizePref, org):
+def getSizePrefDistance(orgSizePref, serviceSizePref, org):
     '''return a value that increases the less the org and the volunteers preferences are compatible'''
     
-    # if no preferences selected, return 0 since all posibilities are good
-    if sizePref == [0, 0, 0, 0, 0, 0]:
-        return 0.0
-
     result = 0.0
+    orgSizeCompatible = False
+    serviceSizeCompatible = False
+    orgSizeSelected = True
+    serviceSizeSelected = True
 
-    orgSizeGood = False
-    serviceSizeGood = False
-    orgSizeSelected = False
-    serviceSizeSelected = False
+    if orgSizePref == [0, 0, 0]:
+        orgSizeSelected = False
+    if serviceSizePref == [0, 0, 0]:
+        serviceSizeSelected = False
 
+    sizePref = [orgSizePref, serviceSizePref]
+
+    # checking if volunteer's size preferences are what the organisation can offer
     for i in range(len(sizePref)):
-        if i < 3:
-            if sizePref[i] == 1:
-                orgSizeSelected = True
-            if sizePref[i] == 1 and org[5 + i] == 1:
-                orgSizeGood = True
-        else:
-            if sizePref[i] == 1:
-                serviceSizeSelected = True
-            if sizePref[i] == 1 and org[5 + i] == 1:
-                serviceSizeGood = True
+        for j in range(len(sizePref[i])):
+            if sizePref[i][j] == 1 and org[(i*5 + j)] == 1:
+                if i == 0:
+                    orgSizeCompatible = True
+                elif i == 1:
+                    serviceSizeCompatible = True
 
     # increasing distance if org size doesn't correspond to preference or if no selection
-    if not orgSizeGood and orgSizeSelected:
+    if not orgSizeCompatible and orgSizeSelected:
         result += 2
     # increasing distance if service size doesn't correspond to preference or if no selection
-    if not serviceSizeGood and serviceSizeSelected:
+    if not serviceSizeCompatible and serviceSizeSelected:
         result += 2*((1.3)**2)
+
     return result
     # Ideas: could increase less if pref is small and vol is medium than when vol is large
 
@@ -103,7 +104,7 @@ def getRoleDistance(rolePref, org):
 
     return ((1-availableRoles/len(rolePref))*5)
 
-def distance(sizePref, org, location, rolePref):
+def distance(orgSizePref, serviceSizePref, org, location, rolePref):
     '''calculates distance between volunteer and organization
         pref: list of length 6 with 1 and zero corresponding to volunteer's preferences. 
             ex: [0, 0, 1, 0, 1, 0] org size: small, service size: medium
@@ -112,32 +113,21 @@ def distance(sizePref, org, location, rolePref):
 
     distance = 0.0
     #increase distance if the org size properties aren't compatable with volunteer's preferences
-    distance += getSizesDistance(sizePref, org)
-    # print('size: ', distance)
+    distance += getSizePrefDistance(orgSizePref, serviceSizePref, org)
     # increasing distance proportional to the physical distance between org's location and volunteer's location
-    distance += (2*((2/5)*getPhysicalDistance(location, org[2])))**2
-    # print('distance: ', distance)
+    distance += ((4/5)*getPhysicalDistance(location, org[2]))**2
     # increasing distance if the prefered role isn't available
     distance += getRoleDistance(rolePref, org)
-    # print('role: ', distance)
 
     return np.sqrt(distance) #not necessary to square root
 
-def rank(sizePref, orgs, location, rolePref):
+def rank(orgSizePref, serviceSizePref, orgs, location, rolePref):
     '''creates a dictionary mapping org id to distance (weight) corresponding to the volunteer's preferences'''
     weights = {}
     for i in range(0, len(orgs)):
-        weights[i] = distance(sizePref, orgs.iloc[i, :], location, rolePref)
+        weights[i] = distance(orgSizePref, serviceSizePref, orgs.iloc[i, :], location, rolePref)
 
     return weights
-
-def getFiveOrgs(sortedOrgs, orgs):
-    '''returns the top 5 corresponding organization'''
-    topOrgs = []
-    for i in range(5):
-        topOrgs.append(orgs.iloc[sortedOrgs[i][0], :])
-
-    return topOrgs
 
 def getFiveNames(sortedOrgs, orgs):
     '''returns the names of the top 5 corresponding organization'''
@@ -147,7 +137,7 @@ def getFiveNames(sortedOrgs, orgs):
 
     return names
 
-def finalRanking(location, sizePref, rolePref):
+def finalRanking(location, orgSizePref, serviceSizePref, rolePref):
     '''returns the top five orgs corresponding to the volunteers preference'''
     orgs = pd.read_excel("./Organizations_V3.xlsx", sheet_name= "org_list")
     #orgs = pd.read_csv("Organizations_V2.csv")
@@ -157,20 +147,24 @@ def finalRanking(location, sizePref, rolePref):
     #create list of roles
     orgs["Available roles"] = orgs["Available roles"].apply(makeList)
 
-    # print(location, sizePref, rolePref)
-
     #weight compatibility of organizations with preferences
-    weighted = rank(sizePref, orgs, location, rolePref)
+    weighted = rank(orgSizePref, serviceSizePref, orgs, location, rolePref)
     sortedOrgs = sorted(weighted.items(), key=operator.itemgetter(1))
-
-    # to pretty print top 5 orgs
-    # output = getFiveOrgs(sortedOrgs, orgs)
 
     #find and display the top 5
     output = getFiveNames(sortedOrgs, orgs)
-    print(sortedOrgs)
 
     return output
+
+def readDescription(orgName):
+    '''returns description (string) of given organization'''
+
+    descriptionAddress = 'static/media/description/' + orgName + '.txt'
+    f = open(descriptionAddress, 'r')
+    description = f.read()
+    f.close()
+
+    return description
 
 @app.route('/')
 def home():
@@ -179,27 +173,35 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     '''receives inputs of preferences from POST, and outputs the top 5 orgs that best fits the preferences'''
-    sizePref = [0, 0, 0, 0, 0, 0]
+    orgSizePref = [0, 0, 0]
+    serviceSizePref = [0, 0, 0]
     location = ''
     rolePref = []
 
+    # process input
     inp = request.form.values()
     input = [str(x) for x in inp]
     for i in input:
         if i in locationID:
             location = i
-        elif i in inputID:
-            sizePref[inputID[i]] = 1
+        elif i in orgSizePreferenceMap:
+            orgSizePref[orgSizePreferenceMap[i]] = 1
+        elif i in serviceSizePreferenceMap:
+            serviceSizePref[serviceSizePreferenceMap[i]] = 1
         else: # roles
             rolePref.append(i)
 
-    output = finalRanking(location, sizePref, rolePref)
+    names = finalRanking(location, orgSizePref, serviceSizePref, rolePref)
 
-    # make file result.html and find a way to output top 5 orgs in output
-    # return render_template('result.html', ...)
+    # replacing all spaces in names by underscore to open org file
+    for i in range(len(names)):
+        temp = names[i]
+        temp = temp.lower()
+        names[i] = temp.replace(' ', '_')
 
-    predText = 'Top 5 orgs:<br> 1.{} <br> 2.{} <br> 3.{} <br> 4.{} <br> 5.{}'.format(output[0], output[1], output[2], output[3], output[4])
-    return render_template('index.html', prediction_text=predText)
+    descriptions = [readDescription(names[0]), readDescription(names[1]), readDescription(names[2]), readDescription(names[3]), readDescription(names[4])]
 
+    return render_template('topOrgsPreset.html', orgNames = names, descriptions = descriptions)
+    
 if __name__ == "__main__":
     app.run(debug=True)
