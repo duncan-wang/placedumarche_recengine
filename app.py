@@ -192,16 +192,27 @@ def predict():
             rolePref.append(i)
 
     names = finalRanking(location, orgSizePref, serviceSizePref, rolePref)
+    print(names)
+    #extracting the description and link of rank orgs from organizations_V3.xlsx file
+    descriptions = []
+    links = []
+    orgs = pd.read_excel("./Organizations_V3.xlsx", sheet_name= "org_list")
+    for i in names:
+        org_descr = orgs.loc[orgs['Name'] == i, 'Brief description' ].item()
+        org_link = orgs.loc[orgs['Name'] == i, 'Link'].item()
+        descriptions.append(org_descr)
+        links.append(org_link)
 
     # replacing all spaces in names by underscore to open org file
-    for i in range(len(names)):
-        temp = names[i]
+    names_adress = names.copy()
+    for i in range(len(names_adress)):
+        temp = names_adress[i]
         temp = temp.lower()
-        names[i] = temp.replace(' ', '_')
+        names_adress[i] = temp.replace(' ', '_')
 
-    descriptions = [readDescription(names[0]), readDescription(names[1]), readDescription(names[2]), readDescription(names[3]), readDescription(names[4])]
-
-    return render_template('topOrgsPreset.html', orgNames = names, descriptions = descriptions)
+    #descriptions = [readDescription(names[0]), readDescription(names[1]), readDescription(names[2]), readDescription(names[3]), readDescription(names[4])]
+    
+    return render_template('topOrgsPreset.html', orgNames = names, orgAdress = names_adress, descriptions = descriptions, links = links)
     
 if __name__ == "__main__":
     app.run(debug=True)
