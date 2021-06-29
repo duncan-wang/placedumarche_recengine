@@ -13,7 +13,8 @@
     <div class="org-directory">
     {% for i in range(0, 3) %}
         <div class="org-column org-{{i}}">
-            <a href="{{links[i]}}">
+            <img class="medal" src="{{ url_for('static', filename='media/medals_'+ i|string() + '.png') }}" alt="medal">
+            <a href="{{links[i]}}" target="_top">
                 <div class="org">
                     <h3 class="org-title"> {{orgNames[i] }} </h3>
                     <img class="org-img" src="{{ url_for('static', filename='media/logo/' + orgAdress[i] + '.png') }}" alt="{{ orgAdress[i] }} logo" class="logo"><br>
@@ -31,7 +32,7 @@
     </h4>
     <div class="org-other">
     {% for i in range(3, 5) %}
-        <a href="{{ links[i] }}"><h5 class="org-other-title">  {{orgNames[i] }} </h5></a>
+        <a href="{{ links[i] }}" target="_top"><h5 class="org-other-title">  {{orgNames[i] }} </h5></a>
     {%endfor%}
     </div>
 
