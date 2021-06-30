@@ -14,24 +14,24 @@ locationID = ['L’Île-Bizard—Sainte-Geneviève', 'Pierrefonds-Roxboro', 'Sai
               'Le Sud-Ouest', 'Verdun', 'LaSalle']
 
 # matrix that maps two locations to their physical distance
-distMatrix = [[0, 1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
-              [0, 0, 1, 1, 2, 4, 3, 3, 2, 2, 4, 3, 3, 3, 2, 3, 3, 3, 2],
-              [0, 0, 0, 1, 2, 3, 3, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
-              [0, 0, 0, 0, 1, 2, 2, 1, 1, 2, 3, 2, 2, 3, 2, 3, 3, 3, 2],
-              [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4],
-              [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5],
-              [0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 3, 3, 4, 4, 4, 5, 5],
-              [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 3, 3, 4, 3],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 2, 3, 4, 4],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+distMatrix = [[1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
+              [0, 1, 1, 2, 4, 3, 3, 2, 2, 4, 3, 3, 3, 2, 3, 3, 3, 2],
+              [0, 0, 1, 2, 3, 3, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
+              [0, 0, 0, 1, 2, 2, 1, 1, 2, 3, 2, 2, 3, 2, 3, 3, 3, 2],
+              [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4],
+              [0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5],
+              [0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 3, 3, 4, 4, 4, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 3, 3, 4, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 2, 3, 4, 4],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
 # dictionary mapping input to index in volunteer sizes preference list
 orgSizePreferenceMap = {'smallOrg': 2, 'mediumOrg': 1, 'largeOrg': 0}
@@ -44,16 +44,26 @@ def makeList(x):
 
 def getPhysicalDistance(location1, location2):
     ''' given 2 locations, return physical distance weight given in the distance matrix'''
+    print("Form Location " + location1)
+    print("Org Location " + location2)
+    print(location1 in locationID)
+    print(location2 in locationID)
+
+    print( location1 == location2)
 
     if location1 in locationID and location2 in locationID:
         x = locationID.index(location1)
         y = locationID.index(location2)
+        print("Form Location Index " + str(x))
+        print("Org Location Index " + str(y))
     else:  # location doesn't exist
         return 10
 
     if x < y:
+        print(distMatrix[x][y])
         return distMatrix[x][y]
     else:
+        print(distMatrix[y][x])
         return distMatrix[y][x]
 
 def getSizePrefDistance(orgSizePref, serviceSizePref, org):
@@ -127,6 +137,8 @@ def rank(orgSizePref, serviceSizePref, orgs, location, rolePref):
     for i in range(0, len(orgs)):
         weights[i] = distance(orgSizePref, serviceSizePref, orgs.iloc[i, :], location, rolePref)
 
+    print(weights)
+
     return weights
 
 def getFiveNames(sortedOrgs, orgs):
@@ -148,6 +160,7 @@ def finalRanking(location, orgSizePref, serviceSizePref, rolePref):
     orgs["Available roles"] = orgs["Available roles"].apply(makeList)
 
     #weight compatibility of organizations with preferences
+    print("Location " + location)
     weighted = rank(orgSizePref, serviceSizePref, orgs, location, rolePref)
     sortedOrgs = sorted(weighted.items(), key=operator.itemgetter(1))
 
@@ -190,6 +203,8 @@ def predict():
             serviceSizePref[serviceSizePreferenceMap[i]] = 1
         else: # roles
             rolePref.append(i)
+
+    print(input)
 
     names = finalRanking(location, orgSizePref, serviceSizePref, rolePref)
     print(names)
