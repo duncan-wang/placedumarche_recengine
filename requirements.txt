@@ -5,3 +5,4 @@ flask
 requests
 xlrd
 openpyxl
+mysql

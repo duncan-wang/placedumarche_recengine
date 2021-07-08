@@ -251,7 +251,7 @@ def predict():
         temp = temp.lower()
         names_address[i] = temp.replace(' ', '_')
     
-        return render_template('topOrgsPreset.html', orgNames = names, orgAdress = names_adress, descriptions = descriptions, links = links)
+        return render_template('topOrgsPreset.html', orgNames = names, orgAdress = names_address, descriptions = descriptions, links = links)
 
 if __name__ == "__main__":
     app.run(debug=True)

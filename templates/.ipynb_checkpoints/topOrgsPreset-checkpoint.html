@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Organization Recommendation Engine</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+</head>
+
+<body>
+
+    <h1 class="page-title" style="margin-block-end: 0.5em;">Your recommended organizations: </h1>
+    <div class="org-directory">
+    {% for i in range(0, 3) %}
+        <div class="org-column org-{{i}}">
+            <img class="medal" src="{{ url_for('static', filename='media/medals_'+ i|string() + '.png') }}" alt="medal">
+            <a href="{{links[i]}}" target="_top">
+                <div class="org">
+                    <h3 class="org-title"> {{orgNames[i] }} </h3>
+                    <img class="org-img" src="{{ url_for('static', filename='media/logo/' + orgAdress[i] + '.png') }}" alt="{{ orgAdress[i] }} logo" class="logo"><br>
+                    <div class="description">
+                        {{ descriptions[i] }}
+                    </div>
+                </div>
+            </a>
+        </div>
+    {%endfor%}
+    </div>
+
+    <h4 class="page-subtitle">
+        Other Organizations to consider: 
+    </h4>
+    <div class="org-other">
+    {% for i in range(3, 5) %}
+        <a href="{{ links[i] }}" target="_top"><h5 class="org-other-title">  {{orgNames[i] }} </h5></a>
+    {%endfor%}
+    </div>
+
+    <div class="btn">
+        <a href="/"><button class="btn-submit">Make a new search</button></a>
+    </div>
+</body>  
+</html>

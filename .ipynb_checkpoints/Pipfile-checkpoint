@@ -13,7 +13,6 @@ requests = "*"
 Flask = "*"
 xlrd = "*"
 openpyxl = "*"
-mysql = "*"
 
 [requires]
 python_version = "3.9.5"
