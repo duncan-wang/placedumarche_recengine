@@ -3,170 +3,191 @@ import pandas as pd
 import operator
 from flask import Flask, request, jsonify, render_template, url_for
 import pickle
+#import mysql
 
 app = Flask(__name__)
 
-# list of locations
-locationID = ['L’Île-Bizard—Sainte-Geneviève', 'Pierrefonds-Roxboro', 'Saint-Laurent', 'Ahuntsic-Cartierville',
-              'Montréal-Nord', 'Rivière-des-Prairies—Pointe-aux-Trembles', 'Anjou', 'Saint-Léonard',
-              'Villeray—Saint-Michel—Parc-Extension', 'Rosemont—La Petite-Patrie', 'Mercier—Hochelaga-Maisonneuve',
-              'Le Plateau-Mont-Royal', 'Outremont', 'Ville-Marie', 'Côte-des-Neiges—Notre-Dame-de-Grâce',
-              'Le Sud-Ouest', 'Verdun', 'LaSalle']
 
-# matrix that maps two locations to their physical distance
-distMatrix = [[1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
-              [0, 1, 1, 2, 4, 3, 3, 2, 2, 4, 3, 3, 3, 2, 3, 3, 3, 2],
-              [0, 0, 1, 2, 3, 3, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
-              [0, 0, 0, 1, 2, 2, 1, 1, 2, 3, 2, 2, 3, 2, 3, 3, 3, 2],
-              [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4],
-              [0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5],
-              [0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 3, 3, 4, 4, 4, 5, 5],
-              [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-              [0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 3, 3, 4, 3],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 2, 3, 4, 4],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+#define credentials
+host_name = "50.87.170.37"
+port_name = '3306'
+username = "myplaced_myplacedumarche"
+password = "Mcfac_2020_mma"
+db_name = "myplaced_WP1DL"
+
+#establish db connection 
+db = mysql.connector.connect(
+   host = host_name,
+   port = port_name,
+   user = username,
+   password = password,
+   database = db_name
+)
+
+cursor = db.cursor()
+
+#query from each db and fetch all results in raw format 
+cursor.execute("SELECT * FROM Organizations_DB")
+organizations_results = cursor.fetchall()
+
+cursor.execute("SELECT * FROM Locations_DB")
+locations_results = cursor.fetchall()
+
+cursor.execute("SELECT * FROM Roles_DB")
+roles_results = cursor.fetchall()
+
+#create new dfs to store queried results from SQL
+orgs_columns = ['OrgID', 'Name', 'Address Line 1', 'Address Line 2', 'Zip Code', 'Location', 'Coordinates', 'Org Size', 'Service Size', 'Target Demographic', 'Services Provided', 'Available Roles', 'Brief Description', 'Link', 'General Contact', 'Internal Contact', 'Consent']
+organizations_df = pd.DataFrame(columns = orgs_columns)
+
+locations_columns = ['LocationID', 'Organization Location']
+locations_df = pd.DataFrame(columns = locations_columns)
+
+roles_columns = ['RoleID', 'Available Roles']
+roles_df = pd.DataFrame(columns = roles_columns)
+
+df_list = [organizations_df, locations_df, roles_df]
+results_list = [organizations_results, locations_results, roles_results]
+
+for i in range(len(df_list)):
+    for j in range(len(results_list[i])): 
+        to_series = pd.Series(results_list[i][j], index = df_list[i].columns)
+        df_list[i] = df_list[i].append(to_series,  ignore_index = True)
+
+organizations_df = df_list[0]
+locations_df = df_list[1]
+roles_df = df_list[2]
+
+organizations_df.replace('\xa0', ' ', regex=True, inplace=True)
+locations_df = locations_df['Organization Location'].tolist()
+all_locations = [i.replace('\xa0',' ') for i in locations_df]
+all_roles = list(roles_df['Available Roles'])
+
 
 # dictionary mapping input to index in volunteer sizes preference list
-orgSizePreferenceMap = {'smallOrg': 2, 'mediumOrg': 1, 'largeOrg': 0}
-serviceSizePreferenceMap = {'smallService': 2, 'mediumService': 1, 'largeService': 0}
+all_org_sizes = ['smallOrg', 'mediumOrg' ,'largeOrg']
+all_service_sizes = ['smallService', 'mediumService' ,'largeService']
 
-def makeList(x):
-    '''splits string into a list with elements separated by ', ' '''
-    result = x.split(", ")
-    return result
+# matrix that maps two locations to their physical distance
+distMatrix = [[0, 1, 2, 3, 4, 5, 5, 4, 3, 4, 5, 4, 4, 4, 3, 4, 4, 3, 2],
+              [0, 0, 1, 1, 2, 4, 3, 3, 2, 2, 4, 3, 3, 3, 2, 3, 3, 3, 2],
+              [0, 0, 0, 1, 2, 3, 3, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
+              [0, 0, 0, 0, 1, 2, 2, 1, 1, 2, 3, 2, 2, 3, 2, 3, 3, 3, 2],
+              [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4],
+              [0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 3, 3, 4, 4, 4, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 3, 3, 4, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 2, 3, 4, 4],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-def getPhysicalDistance(location1, location2):
-    ''' given 2 locations, return physical distance weight given in the distance matrix'''
-    print("Form Location " + location1)
-    print("Org Location " + location2)
-    print(location1 in locationID)
-    print(location2 in locationID)
-
-    print( location1 == location2)
-
-    if location1 in locationID and location2 in locationID:
-        x = locationID.index(location1)
-        y = locationID.index(location2)
-        print("Form Location Index " + str(x))
-        print("Org Location Index " + str(y))
-    else:  # location doesn't exist
-        return 10
-
-    if x < y:
-        print(distMatrix[x][y])
-        return distMatrix[x][y]
+def getPhysicalDistance(location_pref, org_location):
+    #if there is no location input or if the user selected no preference, then penalty is 0
+    if location_pref == [] or location_pref == 'NoLocationPref':
+        return 0
+    #otherwise, loop through the user's selected locations, calculate the distance penalty for each location, and take the smallest one
     else:
-        print(distMatrix[y][x])
-        return distMatrix[y][x]
+        penalty = []
+        for i in range(len(location_pref)): 
+            x = all_locations.index(location_pref[i])
+            y = all_locations.index(org_location)
+            if x < y:
+                penalty.append(distMatrix[x][y])
+            else:
+                penalty.append(distMatrix[y][x]) 
+    return min(penalty)
 
-def getSizePrefDistance(orgSizePref, serviceSizePref, org):
-    '''return a value that increases the less the org and the volunteers preferences are compatible'''
+def getRoleDistance(role_pref, org_roles):
+
+    # if there is no role input or if the user selected no preference, then penalty is 0
+    if role_pref == [] or role_pref == 'NoRolePref':
+        return 0.0
     
-    result = 0.0
-    orgSizeCompatible = False
-    serviceSizeCompatible = False
-    orgSizeSelected = True
-    serviceSizeSelected = True
+    #for each of the user's specified roles, if the role is found in the organization, increase a counter
+    #return the proportion of matched roles in relation to the number of roles specified as a score out of 5
+    #ex: 2/3 matched roles = 1.66 
+    available_roles = 0
+    for i in role_pref:
+        if i in org_roles:
+            available_roles += 1
 
-    if orgSizePref == [0, 0, 0]:
-        orgSizeSelected = False
-    if serviceSizePref == [0, 0, 0]:
-        serviceSizeSelected = False
+    return ((1-available_roles/len(role_pref))*5)
 
-    sizePref = [orgSizePref, serviceSizePref]
 
-    # checking if volunteer's size preferences are what the organisation can offer
-    for i in range(len(sizePref)):
-        for j in range(len(sizePref[i])):
-            if sizePref[i][j] == 1 and org[(i*5 + j)] == 1:
-                if i == 0:
-                    orgSizeCompatible = True
-                elif i == 1:
-                    serviceSizeCompatible = True
-
-    # increasing distance if org size doesn't correspond to preference or if no selection
-    if not orgSizeCompatible and orgSizeSelected:
-        result += 2
-    # increasing distance if service size doesn't correspond to preference or if no selection
-    if not serviceSizeCompatible and serviceSizeSelected:
-        result += 2*((1.3)**2)
-
-    return result
-    # Ideas: could increase less if pref is small and vol is medium than when vol is large
-
-def getRoleDistance(rolePref, org):
-    '''returns a weight if roles wanted are not available'''
-    # no roles selected
-    if rolePref == []:
+def getOrgSizePrefDistance(org_size_pref, org_size):
+   
+    # if there is no size input or if the user selected no preference, then penalty is 0
+    if org_size_pref == [] or org_size_pref == 'NoOrgPref':
         return 0.0
 
-    availableRoles = 0
-    for role in rolePref:
-        if role in org[4]:
-            availableRoles += 1
+    orgSizeMap = {'small': 'smallOrg', 'medium': 'mediumOrg', 'large': 'largeOrg'}
 
-    return ((1-availableRoles/len(rolePref))*5)
+    #if the organization's size is contained in one of the user's preference(s), return 0
+    if orgSizeMap[org_size] in org_size_pref:
+        return 0.0 
+    
+    org_pref_penalty = 0 
+    
+    #increase the penalty by 2.5 if either the user's choice contains 'medium' or if the organization's size is medium -- since no matter what then the user's preference will only be 1 step away from organization's
+    #otherwise increase penalty by 5 (max)
+    if 'mediumOrg' in org_size_pref or org_size == 'medium':
+        org_pref_penalty += 2.5 
+    else:
+        org_pref_penalty += 5
+        
+    return org_pref_penalty
 
-def distance(orgSizePref, serviceSizePref, org, location, rolePref):
-    '''calculates distance between volunteer and organization
-        pref: list of length 6 with 1 and zero corresponding to volunteer's preferences. 
-            ex: [0, 0, 1, 0, 1, 0] org size: small, service size: medium
-        gives highest importance to location
-        second highest importance to service size'''
+def getServiceSizePrefDistance(service_size_pref, service_size):
+   
+    # if there is no size input or if the user selected no preference, then penalty is 0
+    if service_size_pref == [] or service_size_pref == 'NoServicePref':
+        return 0.0
 
+    serviceSizeMap = {'small': 'smallService', 'medium': 'mediumService', 'large': 'largeService'}
+
+    #if the service's size is contained in one of the user's preference(s), return 0
+    if serviceSizeMap[service_size] in service_size_pref:
+        return 0.0 
+    
+    service_pref_penalty = 0 
+    
+    #increase the penalty by 2.5 if either the user's choice contains 'medium' or if the organization's size is medium -- since no matter what then the user's preference will only be 1 step away from organization's
+    #otherwise increase penalty by 5 (max)
+    if 'mediumService' in service_size_pref or service_size == 'medium':
+        service_pref_penalty += 2.5 
+    else:
+        service_pref_penalty += 5
+        
+    return service_pref_penalty
+
+def distance(location_pref, role_pref, org_size_pref, service_size_pref, organizations_df):
     distance = 0.0
-    #increase distance if the org size properties aren't compatable with volunteer's preferences
-    distance += getSizePrefDistance(orgSizePref, serviceSizePref, org)
-    # increasing distance proportional to the physical distance between org's location and volunteer's location
-    distance += ((4/5)*getPhysicalDistance(location, org[2]))**2
-    # increasing distance if the prefered role isn't available
-    distance += getRoleDistance(rolePref, org)
+    distance += getPhysicalDistance(location_pref, organizations_df['Location'])
+    distance += getRoleDistance(role_pref, organizations_df['Available Roles'])
+    distance += getOrgSizePrefDistance(org_size_pref, organizations_df['Org Size'])
+    distance += getServiceSizePrefDistance(service_size_pref, organizations_df['Service Size'])
 
-    return np.sqrt(distance) #not necessary to square root
+    return distance
 
-def rank(orgSizePref, serviceSizePref, orgs, location, rolePref):
-    '''creates a dictionary mapping org id to distance (weight) corresponding to the volunteer's preferences'''
+def finalRanking(location_pref, role_pref, org_size_pref, service_size_pref, organizations_df):
+    
     weights = {}
-    for i in range(0, len(orgs)):
-        weights[i] = distance(orgSizePref, serviceSizePref, orgs.iloc[i, :], location, rolePref)
-
-    print(weights)
-
-    return weights
-
-def getFiveNames(sortedOrgs, orgs):
-    '''returns the names of the top 5 corresponding organization'''
-    names = []
-    for i in range(5):
-        names.append(orgs.iloc[sortedOrgs[i][0], 1])
-
-    return names
-
-def finalRanking(location, orgSizePref, serviceSizePref, rolePref):
-    '''returns the top five orgs corresponding to the volunteers preference'''
-    orgs = pd.read_excel("./Organizations_V3.xlsx", sheet_name= "org_list")
-    #orgs = pd.read_csv("Organizations_V2.csv")
-    orgs = orgs.iloc[:, 0:7]
-    #dummify columns
-    orgs = pd.get_dummies(orgs, columns=["Org size", "Service size"])
-    #create list of roles
-    orgs["Available roles"] = orgs["Available roles"].apply(makeList)
-
-    #weight compatibility of organizations with preferences
-    print("Location " + location)
-    weighted = rank(orgSizePref, serviceSizePref, orgs, location, rolePref)
-    sortedOrgs = sorted(weighted.items(), key=operator.itemgetter(1))
+    for i in range(0, len(organizations_df)):
+        weights[i] = distance(location_pref, role_pref, org_size_pref, service_size_pref, organizations_df.iloc[i])
+    sorted_orgs = sorted(weights.items(), key=operator.itemgetter(1))
 
     #find and display the top 5
-    output = getFiveNames(sortedOrgs, orgs)
-
+    output = []
+    for i in range(5):
+        output.append(organizations_df.iloc[sorted_orgs[i][0], 1])
+        
     return output
 
 def readDescription(orgName):
@@ -184,50 +205,53 @@ def home():
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
-def predict():
-    '''receives inputs of preferences from POST, and outputs the top 5 orgs that best fits the preferences'''
-    orgSizePref = [0, 0, 0]
-    serviceSizePref = [0, 0, 0]
-    location = ''
-    rolePref = []
 
-    # process input
+def predict(): 
+    
+    #blank if no input is received 
+    location_pref = []
+    role_pref = []
+    org_size_pref = []
+    service_size_pref = []
+
+
+    #placeholder for now, later this will come from the user inputs
+    inp = ['Verdun', 'Saint-Laurent', 'Ville-Marie','smallOrg', 'mediumOrg', 'smallService', 'mediumService', 'Cooking' ,'Gardening/Harvesting' ,'Cleaning']
+
+    # verify and process inputs - this step is not strictly necessary 
     inp = request.form.values()
     input = [str(x) for x in inp]
     for i in input:
-        if i in locationID:
-            location = i
-        elif i in orgSizePreferenceMap:
-            orgSizePref[orgSizePreferenceMap[i]] = 1
-        elif i in serviceSizePreferenceMap:
-            serviceSizePref[serviceSizePreferenceMap[i]] = 1
-        else: # roles
-            rolePref.append(i)
+        if i in all_locations or i == 'NoLocationPref': #location
+            location_pref.append(i)
+        elif i in all_roles or i == 'NoRolePref': #role
+            role_pref.append(i)
+        elif i in all_org_sizes or i == 'NoOrgPref': #org size
+            org_size_pref.append(i)
+        elif i in all_service_sizes or i == 'NoServicePref': #service size
+            service_size_pref.append(i)
 
-    print(input)
 
-    names = finalRanking(location, orgSizePref, serviceSizePref, rolePref)
-    print(names)
+    names = finalRanking(location_pref, role_pref, org_size_pref, service_size_pref, organizations_df)
+
     #extracting the description and link of rank orgs from organizations_V3.xlsx file
     descriptions = []
     links = []
-    orgs = pd.read_excel("./Organizations_V3.xlsx", sheet_name= "org_list")
+    
     for i in names:
-        org_descr = orgs.loc[orgs['Name'] == i, 'Brief description' ].item()
-        org_link = orgs.loc[orgs['Name'] == i, 'Link'].item()
+        org_descr = organizations_df.loc[organizations_df['Name'] == i, 'Brief Description' ].item()
+        org_link = organizations_df.loc[organizations_df['Name'] == i, 'Link'].item()
         descriptions.append(org_descr)
         links.append(org_link)
 
     # replacing all spaces in names by underscore to open org file
-    names_adress = names.copy()
-    for i in range(len(names_adress)):
-        temp = names_adress[i]
+    names_address = names.copy()
+    for i in range(len(names_address)):
+        temp = names_address[i]
         temp = temp.lower()
-        names_adress[i] = temp.replace(' ', '_')
+        names_address[i] = temp.replace(' ', '_')
+    
+        return render_template('topOrgsPreset.html', orgNames = names, orgAdress = names_address, descriptions = descriptions, links = links)
 
-    #descriptions = [readDescription(names[0]), readDescription(names[1]), readDescription(names[2]), readDescription(names[3]), readDescription(names[4])]
-    
-    return render_template('topOrgsPreset.html', orgNames = names, orgAdress = names_adress, descriptions = descriptions, links = links)
-    
 if __name__ == "__main__":
     app.run(debug=True)
