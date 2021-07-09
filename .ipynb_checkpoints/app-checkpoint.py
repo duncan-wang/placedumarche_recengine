@@ -3,7 +3,7 @@ import pandas as pd
 import operator
 from flask import Flask, request, jsonify, render_template, url_for
 import pickle
-#import mysql
+import mysql
 
 app = Flask(__name__)
 
